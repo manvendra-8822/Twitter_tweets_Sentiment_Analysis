@@ -145,3 +145,90 @@ wc = WordCloud(max_words = 1000 , width = 1600 , height = 800,
 plt.imshow(wc)
 
 
+# Splitting the 90% data for training data and 10% for testing data
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size = 0.1, random_state =26105111)
+#Transforming the Dataset Using TF-IDF Vectorizer
+vectoriser = TfidfVectorizer(ngram_range=(1,2), max_features=500000)
+vectoriser.fit(X_train)
+print('No. of feature_words: ', len(vectoriser.get_feature_names()))
+X_train = vectoriser.transform(X_train)
+X_test  = vectoriser.transform(X_test)
+
+#Model Evaluation -: Accuracy Score, Confusion Matrix, ROC-AUC Curve
+def model_Evaluate(model):
+# Predict values for Test dataset
+y_pred = model.predict(X_test)
+# Print the evaluation metrics for the dataset.
+print(classification_report(y_test, y_pred))
+# Compute and plot the Confusion matrix
+cf_matrix = confusion_matrix(y_test, y_pred)
+categories = ['Negative','Positive']
+group_names = ['True Neg','False Pos', 'False Neg','True Pos']
+group_percentages = ['{0:.2%}'.format(value) for value in cf_matrix.flatten() / np.sum(cf_matrix)]
+labels = [f'{v1}n{v2}' for v1, v2 in zip(group_names,group_percentages)]
+labels = np.asarray(labels).reshape(2,2)
+sns.heatmap(cf_matrix, annot = labels, cmap = 'Blues',fmt = '',
+xticklabels = categories, yticklabels = categories)
+plt.xlabel("Predicted values", fontdict = {'size':14}, labelpad = 10)
+plt.ylabel("Actual values" , fontdict = {'size':14}, labelpad = 10)
+plt.title ("Confusion Matrix", fontdict = {'size':18}, pad = 20)
+
+#We build our model using 3 algos - : Bernoulli Naive Bayes Classifier, SVM, Logistic Regression
+
+BNBmodel = BernoulliNB()
+BNBmodel.fit(X_train, y_train)
+model_Evaluate(BNBmodel)
+y_pred1 = BNBmodel.predict(X_test)
+#Plot ROC-AUC curve for model 1
+from sklearn.metrics import roc_curve, auc
+fpr, tpr, thresholds = roc_curve(y_test, y_pred1)
+roc_auc = auc(fpr, tpr)
+plt.figure()
+plt.plot(fpr, tpr, color='darkorange', lw=1, label='ROC curve (area = %0.2f)' % roc_auc)
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC CURVE')
+plt.legend(loc="lower right")
+plt.show()
+
+
+SVCmodel = LinearSVC()
+SVCmodel.fit(X_train, y_train)
+model_Evaluate(SVCmodel)
+y_pred2 = SVCmodel.predict(X_test)
+
+#Plot ROC-AUC curve for model 2
+from sklearn.metrics import roc_curve, auc
+fpr, tpr, thresholds = roc_curve(y_test, y_pred2)
+roc_auc = auc(fpr, tpr)
+plt.figure()
+plt.plot(fpr, tpr, color='darkorange', lw=1, label='ROC curve (area = %0.2f)' % roc_auc)
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC CURVE')
+plt.legend(loc="lower right")
+plt.show()
+
+
+LRmodel = LogisticRegression(C = 2, max_iter = 1000, n_jobs=-1)
+LRmodel.fit(X_train, y_train)
+model_Evaluate(LRmodel)
+y_pred3 = LRmodel.predict(X_test)
+#Plot ROC-AUC curve for model 3
+from sklearn.metrics import roc_curve, auc
+fpr, tpr, thresholds = roc_curve(y_test, y_pred3)
+roc_auc = auc(fpr, tpr)
+plt.figure()
+plt.plot(fpr, tpr, color='darkorange', lw=1, label='ROC curve (area = %0.2f)' % roc_auc)
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC CURVE')
+plt.legend(loc="lower right")
+plt.show()
+
