@@ -13,9 +13,26 @@ DATASET_COLUMNS=['target','ids','date','flag','user','text']
 DATASET_ENCODING = "ISO-8859-1"
 df = pd.read_csv('data.csv', encoding=DATASET_ENCODING, names=DATASET_COLUMNS)
 
+#EDA
 df.sample(5)
 
 df.head(10)
+df.columns
+print('length of data is', len(df))
+df.shape
+df.info()
+df.dtypes
+np.sum(df.isnull().any(axis=1))
+df['target'].unique()
+
+#Data Visualisation of Target Variable
+ax = df.groupby('target').count().plot(kind='bar', title='Distribution of data',legend=False)
+ax.set_xticklabels(['Negative','Positive'], rotation=0)
+# Storing data in lists.
+text, sentiment = list(df['text']), list(df['target'])
+import seaborn as sns
+sns.countplot(x='target', data=df)
+
 
 #Cleaning the data 
 data=df[['text','target']]
@@ -126,3 +143,5 @@ plt.figure(figsize = (20,20))
 wc = WordCloud(max_words = 1000 , width = 1600 , height = 800,
                collocations=False).generate(" ".join(data_neg))
 plt.imshow(wc)
+
+
