@@ -1,4 +1,4 @@
-Upon evaluating all the models, we can conclude-
+Upon evaluating all 3 models, it can be concluded-
 
 Accuracy: As far as the accuracy of the model is concerned, Logistic Regression performs better than SVM, which in turn performs better than Bernoulli Naive Bayes.
 
